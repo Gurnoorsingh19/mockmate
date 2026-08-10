@@ -35,11 +35,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Already completed" });
     }
 
-    const answeredQuestions = interviewSession.questions.filter(q => q.answers && q.answers.length > 0);
+    const answeredQuestions = interviewSession.questions.filter((q: any) => q.answers && q.answers.length > 0);
     
     let transcript = "The candidate ended the interview before answering any questions.";
     if (answeredQuestions.length > 0) {
-      transcript = answeredQuestions.map(q => {
+      transcript = answeredQuestions.map((q: any) => {
         const answer = q.answers[0].text;
         return `Q: ${q.text}\nA: ${answer}`;
       }).join("\n\n");
