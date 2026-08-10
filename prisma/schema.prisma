@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String?  @unique
+  password  String?
+  createdAt DateTime @default(now())
+
+  sessions  InterviewSession[]
+}
+
+model InterviewSession {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  role           String
+  level          String
+  interviewType  String
+  status         String   @default("IN_PROGRESS") // IN_PROGRESS, COMPLETED
+  createdAt      DateTime @default(now())
+
+  questions      Question[]
+  feedback       Feedback?
+}
+
+model Question {
+  id           String   @id @default(cuid())
+  sessionId    String
+  session      InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  text         String
+  order        Int
+  isFollowup   Boolean  @default(false)
+  
+  answers      Answer[]
+}
+
+model Answer {
+  id           String   @id @default(cuid())
+  questionId   String
+  question     Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  text         String
+  submittedAt  DateTime @default(now())
+}
+
+model Feedback {
+  id                  String   @id @default(cuid())
+  sessionId           String   @unique
+  session             InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  overallScore        Int
+  strengths           String   
+  improvements        String   
+  perQuestionFeedback String   
+  createdAt           DateTime @default(now())
+}
